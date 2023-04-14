@@ -1,6 +1,8 @@
 (function () {
-    const SERVER_URL = 'https://k3smiayuwj.execute-api.us-east-2.amazonaws.com'; 
-    const chatWidgetContainer = document.createElement("div");
+const SERVER_URL = 'https://k3smiayuwj.execute-api.us-east-2.amazonaws.com'; 
+const CONTROL_PROMPT = "you are a text based adventure game.";
+
+const chatWidgetContainer = document.createElement("div");
 chatWidgetContainer.id = "chatgpt-widget-container";
 document.body.appendChild(chatWidgetContainer);
 
@@ -48,7 +50,6 @@ async function sendMessageToChatGPT(message) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${API_KEY}`,
     },
     body: JSON.stringify({
       prompt: `${CONTROL_PROMPT} ${message}`,
