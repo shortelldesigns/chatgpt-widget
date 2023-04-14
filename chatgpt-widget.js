@@ -1,72 +1,64 @@
 (function () {
-    const SERVER_URL = 'https://k3smiayuwj.execute-api.us-east-2.amazonaws.com'; // You will replace this with your server URL after setting up the server.
+    const SERVER_URL = 'https://k3smiayuwj.execute-api.us-east-2.amazonaws.com'; 
+    const chatWidgetContainer = document.createElement("div");
+chatWidgetContainer.id = "chatgpt-widget-container";
+document.body.appendChild(chatWidgetContainer);
 
-    // Load chat widget styles
-    const chatWidgetStyle = document.createElement('link');
-    chatWidgetStyle.rel = 'stylesheet';
-    chatWidgetStyle.href = 'chatgpt-widget.css';
-    document.head.appendChild(chatWidgetStyle);
+// Create chat area
+const chatArea = document.createElement("div");
+chatArea.id = "chatgpt-chat-area";
+chatWidgetContainer.appendChild(chatArea);
 
-    // Create chat widget container
-    const chatWidgetContainer = document.createElement('div');
-    chatWidgetContainer.id = 'chatgpt-widget-container';
-    document.body.appendChild(chatWidgetContainer);
+// Create input form
+const inputForm = document.createElement("form");
+inputForm.id = "chatgpt-input-form";
+chatWidgetContainer.appendChild(inputForm);
 
-    // Load chat widget script
-    const chatWidgetScript = document.createElement('script');
-    chatWidgetScript.src = 'chatgpt-widget.js';
-    chatWidgetContainer.appendChild(chatWidgetScript);
+// Create input field
+const inputField = document.createElement("input");
+inputField.id = "chatgpt-input-field";
+inputField.type = "text";
+inputField.placeholder = "Type your message here...";
+inputForm.appendChild(inputField);
 
-    // ChatGPT interaction
-    async function sendMessageToChatGPT(message) {
-        const response = await fetch(SERVER_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: message
-            })
-        });
-    
-        const result = await response.json();
-        return result.response.trim();
-    }
-        // Create chat area
-    const chatArea = document.createElement('div');
-    chatArea.id = 'chatgpt-chat-area';
-    chatWidgetContainer.appendChild(chatArea);
+function appendMessage(text, sender) {
+  const message = document.createElement("div");
+  message.className = `chatgpt-message chatgpt-${sender}`;
+  message.textContent = text;
+  chatArea.appendChild(message);
+  chatArea.scrollTop = chatArea.scrollHeight;
+}
 
-    // Create input form
-    const inputForm = document.createElement('form');
-    inputForm.id = 'chatgpt-input-form';
-    chatWidgetContainer.appendChild(inputForm);
+inputForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    // Create input field
-    const inputField = document.createElement('input');
-    inputField.id = 'chatgpt-input-field';
-    inputField.type = 'text';
-    inputField.placeholder = 'Type your message here...';
-    inputForm.appendChild(inputField);
+  const message = inputField.value;
+  inputField.value = "";
 
-    function appendMessage(text, sender) {
-        const message = document.createElement('div');
-        message.className = `chatgpt-message chatgpt-${sender}`;
-        message.textContent = text;
-        chatArea.appendChild(message);
-        chatArea.scrollTop = chatArea.scrollHeight;
-    }
+  if (!message) return;
 
-    inputForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
+  appendMessage(message, "user");
 
-        const message = inputField.value;
-        inputField.value = '';
+  const chatGPTResponse = await sendMessageToChatGPT(message);
+  appendMessage(chatGPTResponse, "chatgpt");
+});
 
-        if (!message) return;
+async function sendMessageToChatGPT(message) {
+  const response = await fetch(SERVER_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${API_KEY}`,
+    },
+    body: JSON.stringify({
+      prompt: `${CONTROL_PROMPT} ${message}`,
+    }),
+  });
 
-        appendMessage(message, 'user');
+  if (!response.ok) {
+    throw new Error("Failed to fetch ChatGPT response");
+  }
 
-        const chatGPTResponse = await sendMessageToChatGPT(message);
-        appendMessage(chatGPTResponse, 'chatgpt');
-    });
+  const jsonResponse = await response.json();
+  return jsonResponse.choices[0].text.trim();
+}
