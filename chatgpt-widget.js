@@ -70,5 +70,3 @@
         const chatGPTResponse = await sendMessageToChatGPT(message);
         appendMessage(chatGPTResponse, 'chatgpt');
     });
-
-})();
