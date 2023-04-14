@@ -62,4 +62,4 @@ async function sendMessageToChatGPT(message) {
 
   const jsonResponse = await response.json();
   return jsonResponse.choices[0].text.trim();
-}
+});
