@@ -1,5 +1,5 @@
 (function () {
-const SERVER_URL = 'https://k3smiayuwj.execute-api.us-east-2.amazonaws.com'; 
+const SERVER_URL = 'https://k3smiayuwj.execute-api.us-east-2.amazonaws.com/ChatRPG'; 
 const CONTROL_PROMPT = "you are a text based adventure game.";
 
 const chatWidgetContainer = document.createElement("div");
