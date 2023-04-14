@@ -32,5 +32,43 @@
         const result = await response.json();
         return result.response.trim();
     }
-    // Add your chat widget implementation here, using the sendMessageToChatGPT function to interact with ChatGPT.
+        // Create chat area
+    const chatArea = document.createElement('div');
+    chatArea.id = 'chatgpt-chat-area';
+    chatWidgetContainer.appendChild(chatArea);
+
+    // Create input form
+    const inputForm = document.createElement('form');
+    inputForm.id = 'chatgpt-input-form';
+    chatWidgetContainer.appendChild(inputForm);
+
+    // Create input field
+    const inputField = document.createElement('input');
+    inputField.id = 'chatgpt-input-field';
+    inputField.type = 'text';
+    inputField.placeholder = 'Type your message here...';
+    inputForm.appendChild(inputField);
+
+    function appendMessage(text, sender) {
+        const message = document.createElement('div');
+        message.className = `chatgpt-message chatgpt-${sender}`;
+        message.textContent = text;
+        chatArea.appendChild(message);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    inputForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        const message = inputField.value;
+        inputField.value = '';
+
+        if (!message) return;
+
+        appendMessage(message, 'user');
+
+        const chatGPTResponse = await sendMessageToChatGPT(message);
+        appendMessage(chatGPTResponse, 'chatgpt');
+    });
+
 })();
